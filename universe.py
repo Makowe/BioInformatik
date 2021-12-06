@@ -35,7 +35,7 @@ class Universe(object):
         spreader.days_since_exposure = 0
         spreader.vaccinated = False
         spreader.recovered = False
-        spreader.immunity = 0
+        spreader.immune = 0
 
         self.running = True
 
@@ -51,7 +51,7 @@ class Universe(object):
 
             # all entities spread virus if they are infectous
             for entity in self.entities:
-                entity.cough()
+                entity.spread()
 
             if new_day:
                 # stuff that should be done every day
@@ -77,8 +77,9 @@ class Universe(object):
 
     def simulation_end(self):
         # analysis
+        self.statistics.plot()
         return
 
     def stop_condition(self) -> bool:
         """ condition is sataisfied if no more entities are infected"""
-        return self.statistics.infected_now[-1] == 0
+        return self.statistics.infected[-1] == 0

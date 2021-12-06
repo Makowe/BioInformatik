@@ -9,14 +9,20 @@ class Entity(object):
     def __init__(self, map: 'Map'):
         self.pos = RandomWalk.random_start_pos()
         self.infectous: bool = False
-        """ person can infect others"""
+        """ entity can infect others"""
 
-        # self.sympthomatic: bool = False
         self.vaccinated: bool = False
-        self.recovered: bool = False
-        self.dead: bool = False
+        """ entity is vaccinated. Entity may still be not immune when vac_effect < 1. """
 
-        self.immunity: float = 0
+        self.recovered: bool = False
+        """ entity is recovered. Entity may still be not immune when recover_effect < 1. """
+
+        self.dead: bool = False
+        """ entity is dead and will be remove from the population the next day. """
+
+        self.immune: bool = False
+        """ person is immune and can't be infected. """
+
         self.days_since_exposure: int = -1
         """ how many days have passed since exposure.
         -1: person is not infected
@@ -26,56 +32,55 @@ class Entity(object):
 
     def vaccinate(self):
         self.vaccinated = True
-        self.increase_immunity(Rules.vac_immunity)
-
-    def recover(self):
-        self.recovered = True
-        self.increase_immunity(Rules.recover_immunity)
-
-    def kill(self):
-        self.dead = True
+        self._immunize(Rules.vac_effect)
 
     def end_infection(self):
+        """ entity either dies or recovers"""
         self.days_since_exposure = -1
         self.infectous = 0
         if random.random() < Rules.mortality:
-            self.kill()
+            self._kill()
         else:
-            self.recover()
+            self._recover()
 
     def walk(self):
+        """ changes position with the pattern of a levi flight """
         self.pos = RandomWalk.levy_flight(self.pos)
 
-    def cough(self):
-        """ if a person is infectous, expose all near entities with a specific probability """
+    def spread(self):
+        """ if a person is infectous, expose all near entities. The infection of the entities depends on the distance
+        between the entities. """
         if self.infectous:
             near_entities: List[dict] = self.map.get_near_entities(self, Rules.max_distance_spread)
-            for entity_dict in near_entities:
-                entity = entity_dict["entity"]
-                distance = entity_dict["distance"]
+            for near_entity_dict in near_entities:
+                entity = near_entity_dict["entity"]
+                distance = near_entity_dict["dist"]
                 probability = 1/(distance + 1) * Rules.spread_probability
                 if self.vaccinated:
                     probability *= Rules.vac_reduce_spread
                 entity.expose(probability)
-        else:
-            return
 
     def expose(self, probability):
-        """ expose a person to the virus. The immunity of the person will act as the probabilty of being infected.
+        """ expose the person to the virus with a given infection probability.
         A person that is infected at the moment, can't be infected again.
         """
-        if self.days_since_exposure >= 0 or self.immunity >= 0.99:
-            # person is already infected or highly immune
+        if self.immune or self.days_since_exposure >= 0:
             return
-        if random.random() < (1 - self.immunity) * probability:
-            # infect person
-            self.days_since_exposure = 0
+        if random.random() < probability:
+            self._infect()
 
-    def increase_immunity(self, percentage):
-        """ the immunity is increased by the specified percentage
-        the percentage is not simply added to the existing immunity but multiplied
-        example: percentage = 0.6
-        old immunity = 0.0 -> new immunity = 0.6
-        old immunity = 0.5 -> new immunity = 0.8
-        old immunity = 1.0 -> new immunity = 1 """
-        self.immunity += (1 - self.immunity) * percentage
+    # PRIVATE
+
+    def _immunize(self, probability=1.0):
+        if not self.immune:
+            self.immune = random.random() < probability
+
+    def _infect(self):
+        self.days_since_exposure = 0
+
+    def _recover(self):
+        self.recovered = True
+        self._immunize(Rules.recover_effect)
+
+    def _kill(self):
+        self.dead = True

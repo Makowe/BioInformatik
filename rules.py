@@ -2,11 +2,11 @@ class Rules(object):
 
     # VIRUS PARAMETERS
 
-    vac_immunity: float = 0.6
-    """ describes how the immunity is increased with a vaccination. """
+    vac_effect: float = 0.6
+    """ probability that a not immune person gets immune by vaccination """
 
-    recover_immunity: float = 1
-    """ describes how the immunity is increased by recovering"""
+    recover_effect: float = 1
+    """ probability that a not immune person gets immune by recovering """
 
     vac_reduce_spread: float = 0.5
     """ describes how the probabilty of infecting an other entity is decreased """
@@ -22,7 +22,7 @@ class Rules(object):
 
     # SIMULATION PARAMETERS
 
-    map_size = 200
+    map_size = 300
     """ number of tiles in vertical and hrizontal direction """
 
     ticks_per_day = 10
@@ -35,16 +35,15 @@ class Rules(object):
     """ maximum distance between two entities to allow exposure """
 
     spread_probability = 0.2
-    """ probability that an infectous entity is directly at a uninfected entity. The probability is
-     further decreased by:
+    """ probability that an infectous entity infects an other unimmune entity that is directly nearby. 
+    The probability is further decreased by:
      - distance between entities
      - vaccination of the spreader
-     - immunity rate of the receiver
      """
 
     # POPULATION PARAMETERS
 
-    number_entities = 1000
+    number_entities = 2000
     """ number of starting entities """
 
     vaccination_rate = 0.5
