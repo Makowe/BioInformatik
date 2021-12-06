@@ -48,8 +48,8 @@ class Entity(object):
         self.pos = RandomWalk.levy_flight(self.pos)
 
     def spread(self):
-        """ if a person is infectous, expose all near entities. The infection of the entities depends on the distance
-        between the entities. """
+        """ if the person is infectous, expose all near entities. The probability of infecting others depends
+        on the distance between the entities. """
         if self.infectous:
             near_entities: List[dict] = self.map.get_near_entities(self, Rules.max_distance_spread)
             for near_entity_dict in near_entities:
