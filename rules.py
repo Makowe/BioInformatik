@@ -18,16 +18,16 @@ class Rules(object):
     map_size = 300
     """ number of tiles in vertical and horizontal direction """
 
-    ticks_per_day = 10
+    ticks_per_day = 5
     """ number of ticks that needs to be passed to complete one day """
 
     levy_alpha = 1.5
     """ parameter alpha for the levi fligth """
 
-    max_distance_spread = 2
+    max_distance_spread = 1
     """ maximum distance between two entities to allow exposure """
 
-    spread_probability = 0.1
+    spread_probability = 0.5
     """ probability that an infectous entity infects an other unimmune entity that is nearby. """
 
     # POPULATION PARAMETERS

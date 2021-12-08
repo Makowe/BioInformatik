@@ -68,5 +68,6 @@ class Statistics(object):
     def plot(self):
         plt.plot(self.infected)
         plt.plot(self.recovered)
+        plt.plot(self.infected_cum)
         plt.show()
 
