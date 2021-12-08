@@ -12,24 +12,15 @@ class Map(object):
         self.universe = universe
         """ reference to the universe """
 
-    def get_near_entities(self, entity_a: Entity, max_distance) -> List[dict]:
-        """ returns a list of dictionaries with entities and their distance to entity_a.
+    def get_near_entities(self, entity_a: Entity, max_distance) -> List[Entity]:
+        """ returns a list of entities near entity_a.
         entity_a itself is not included in the list.
-        return list[
-            {
-                "entity": Entity,
-                "dist": distance to entity_a
-            },
-            ...
-        ]
         """
         near_people = []
         for entity_b in self.universe.entities:
             distance = self.calc_distance(entity_b.pos, entity_a.pos)
             if distance <= max_distance and entity_b is not entity_a:
-                near_people.append({
-                    "entity": entity_b,
-                    "dist": distance})
+                near_people.append(entity_b)
         return near_people
 
     @staticmethod

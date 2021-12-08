@@ -7,8 +7,6 @@ from rules import Rules
 
 class Statistics(object):
     def __init__(self):
-        self.population: list = []
-
         # data at the moment
         self.exposed: list = []
         self.infectous: list = []
@@ -18,13 +16,11 @@ class Statistics(object):
 
         # cumulative data
         self.infected_cum: list = []
-        self.deaths_cum: list = []
 
         # new data
         self.infected_new: list = []
 
     def save_data_day(self, day: int, entities: List[Entity]):
-        population = len(entities)
         exposed = 0
         infectous = 0
         infected = 0
@@ -32,7 +28,6 @@ class Statistics(object):
         immune = 0
 
         infected_new = 0
-        deaths_cum = Rules.number_entities - len(entities)
 
         for entity in entities:
             if entity.immune: immune += 1
@@ -46,8 +41,6 @@ class Statistics(object):
                     infected_new += 1
         infected_cum = self.calc_cumulative(self.infected_cum, infected_new)
 
-        self.population.append(population)
-
         self.exposed.append(exposed)
         self.infectous.append(infectous)
         self.infected.append(infected)
@@ -55,7 +48,6 @@ class Statistics(object):
         self.immune.append(immune)
 
         self.infected_cum.append(infected_cum)
-        self.deaths_cum.append(deaths_cum)
 
         self.infected_new.append(infected_new)
 
@@ -71,12 +63,10 @@ class Statistics(object):
                f"is: {self.infectous[-1]} " \
                f"id: {self.infected[-1]} " \
                f"id_n: {self.infected_new[-1]} " \
-               f"id_c: {self.infected_cum[-1]} " \
-               f"p: {self.population[-1]}"
+               f"id_c: {self.infected_cum[-1]} "
 
     def plot(self):
         plt.plot(self.infected)
         plt.plot(self.recovered)
-        plt.plot(self.deaths_cum)
         plt.show()
 

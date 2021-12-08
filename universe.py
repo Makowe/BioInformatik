@@ -25,11 +25,6 @@ class Universe(object):
             entity = Entity(self.map)
             self.entities.append(entity)
 
-        # vaccinate some people
-        for entity in self.entities:
-            if random.random() < Rules.vaccination_rate:
-                entity.vaccinate()
-
         # infect single person
         spreader = self.entities[0]
         spreader.days_since_exposure = 0
@@ -64,11 +59,6 @@ class Universe(object):
                         entity.infectous = True
                     if entity.days_since_exposure > Rules.days_exposure_till_recovered:
                         entity.end_infection()
-
-                # remove dead entites
-                for entity in self.entities:
-                    if entity.dead:
-                        self.entities.remove(entity)
 
                 self.statistics.save_data_day(self.timer.day, self.entities)
                 self.running = not self.stop_condition()
