@@ -28,9 +28,6 @@ class Universe(object):
         # infect single person
         spreader = self.entities[0]
         spreader.days_since_exposure = 0
-        spreader.vaccinated = False
-        spreader.recovered = False
-        spreader.immune = 0
 
         self.running = True
 
