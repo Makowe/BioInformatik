@@ -10,6 +10,8 @@ class Entity(object):
         self.pos = RandomWalk.random_start_pos()
         """ position on the map"""
 
+        self.susceptible: bool = True
+
         self.infectous: bool = False
         """ entity can infect others"""
 
@@ -18,6 +20,8 @@ class Entity(object):
 
         self.immune: bool = False
         """ person is immune and can't be infected. """
+
+        self.follows_rules = random.random() < Rules.follow_rules
 
         self.days_since_exposure: int = -1
         """ how many days have passed since exposure.
@@ -39,9 +43,10 @@ class Entity(object):
     def spread(self):
         """ if the person is infectous, expose all near entities with specified probabilty"""
         if self.infectous:
-            near_entities: List[Entity] = self.map.get_near_entities(self, Rules.max_distance_spread)
+            near_entities: List[Entity] = self.map.get_near_susceptibles(self)
             for near_entity in near_entities:
-                probability = Rules.spread_probability
+                follow_rules = self.follows_rules + near_entity.follows_rules
+                probability = Rules.spread_probability * (1 - Rules.contact_reduction/2 * follow_rules)
                 near_entity.expose(probability)
 
     def expose(self, probability):
@@ -51,18 +56,17 @@ class Entity(object):
         if self.immune or self.days_since_exposure >= 0:
             return
         if random.random() < probability:
-            self._infect()
+            self.infect()
 
     # PRIVATE
+    def infect(self):
+        self.days_since_exposure = 0
+        self.susceptible = False
 
     def _immunize(self, probability=1.0):
         if not self.immune:
             self.immune = random.random() < probability
 
-    def _infect(self):
-        self.days_since_exposure = 0
-
     def _recover(self):
         self.recovered = True
-        self._immunize(Rules.recover_effect)
-
+        self._immunize()

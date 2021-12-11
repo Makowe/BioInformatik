@@ -25,9 +25,10 @@ class Universe(object):
             entity = Entity(self.map)
             self.entities.append(entity)
 
-        # infect single person
-        spreader = self.entities[0]
-        spreader.days_since_exposure = 0
+        # infect the specified number of people
+        for entity_idx in range(Rules.start_spreaders):
+            self.entities[entity_idx].infect()
+            self.entities[entity_idx].follows_rules = False
 
         self.running = True
 
@@ -60,7 +61,6 @@ class Universe(object):
                 self.statistics.save_data_day(self.timer.day, self.entities)
                 self.running = not self.stop_condition()
                 print(self.statistics.print_last())
-        self.simulation_end()
 
     def simulation_end(self):
         # analysis
@@ -69,4 +69,4 @@ class Universe(object):
 
     def stop_condition(self) -> bool:
         """ condition is sataisfied if no more entities are infected"""
-        return self.statistics.infected[-1] == 0
+        return self.statistics.infected[-1] < Rules.stop_spreaders
